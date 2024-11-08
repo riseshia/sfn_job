@@ -5,6 +5,7 @@ require "aws-sdk-states"
 
 require_relative "sfn_job/version"
 require_relative "sfn_job/configuration"
+require_relative "sfn_job/runner"
 
 module SfnJob
   class << self
