@@ -7,8 +7,12 @@ namespace :sfn_job do
 
     $stdout.sync = true
 
-    SfnJob::Runner.run(
-      serialized_job: ARGV[1],
-    )
+    if ENV['SERIALIZED_JOB'].nil?
+      raise 'SERIALIZED_JOB environment variable is required'
+    end
+
+    serialized_job = ENV.fetch('SERIALIZED_JOB')
+
+    SfnJob::Runner.run(serialized_job: serialized_job)
   end
 end

@@ -41,7 +41,7 @@ module SfnJob
     end
 
     def deserialize(serialized_job)
-      JSON.parse(serialized_job).transform_keys(&:to_sym)
+      JSON.parse(serialized_job)
     end
   end
 end

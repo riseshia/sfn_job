@@ -21,7 +21,7 @@ RSpec.describe TestJob do
         expect(params[:state_machine_arn]).to eq(queue_name)
         expect(params[:name]).to be_valid_state_execution_name(TestJob)
       end
-      TestJob.perform_later
+      TestJob.perform_later("a", "b", c: "c", d: "d")
     end
   end
 end

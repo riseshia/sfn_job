@@ -19,5 +19,22 @@ RSpec.configure do |config|
     c.syntax = :expect
   end
 
+  config.around do |e|
+    begin
+      original_env = ENV.to_h.dup
+      e.run
+    ensure
+      ENV.replace(original_env)
+    end
+  end
+
+  config.before(:suite) do
+    Rails.application.load_tasks
+  end
+
+  config.before(:each) do
+    Rake.application.tasks.each(&:reenable)
+  end
+
   config.include(CustomMatchers)
 end

@@ -5,10 +5,7 @@ module SfnJob
     class << self
       def run(serialized_job)
         job_data = SfnJob.deserialize(serialized_job)
-
-        worker = job_data[:class].constantize.new
-
-        worker.perform(*job_data[:args], **job_data[:kwargs])
+        ActiveJob::Base.execute job_data
       end
     end
   end
