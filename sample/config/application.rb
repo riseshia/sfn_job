@@ -11,7 +11,7 @@ require "action_controller/railtie"
 # require "action_mailbox/engine"
 # require "action_text/engine"
 require "action_view/railtie"
-require "action_cable/engine"
+# require "action_cable/engine"
 # require "rails/test_unit/railtie"
 
 # Require the gems listed in Gemfile, including any gems
@@ -21,7 +21,7 @@ Bundler.require(*Rails.groups)
 module Sample
   class Application < Rails::Application
     # Initialize configuration defaults for originally generated Rails version.
-    config.load_defaults 7.2
+    config.load_defaults 8.0
 
     # Please, add to the `ignore` list any other `lib` subdirectories that do
     # not contain `.rb` files, or that should not be reloaded or eager loaded.
