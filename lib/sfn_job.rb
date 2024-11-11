@@ -15,6 +15,8 @@ require_relative "sfn_job/configuration"
 require_relative "sfn_job/runner"
 
 module SfnJob
+  MAX_SERIALIZED_JOB_SIZE = 60_000
+
   class << self
     def configure
       yield config
@@ -37,7 +39,9 @@ module SfnJob
     end
 
     private def serialize(job)
-      JSON.dump({ serialized_job: JSON.dump(job.serialize) })
+      JSON.dump({ serialized_job: JSON.dump(job.serialize) }).tap do |serialized_job|
+        raise "Job serialization is too large" if serialized_job.bytesize > MAX_SERIALIZED_JOB_SIZE
+      end
     end
 
     def deserialize(serialized_job)
