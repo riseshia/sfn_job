@@ -3,6 +3,13 @@
 require "json"
 require "aws-sdk-states"
 
+begin
+  require "rails"
+rescue LoadError
+else
+  require "sfn_job/railtie"
+end
+
 require_relative "sfn_job/version"
 require_relative "sfn_job/configuration"
 require_relative "sfn_job/runner"
@@ -19,25 +26,21 @@ module SfnJob
 
     def enqueue(job)
       sfn_client.start_execution({
-        state_machine_arn: config.state_machine_arn,
-        name: job.job_id,
+        state_machine_arn: job.queue_name,
+        name: "#{job.class.name}-#{job.job_id}",
         input: serialize(job),
       })
     end
 
     def sfn_client
-      @sfn_client ||= Aws::States::Client.new(region: config.region)
+      @sfn_client ||= Aws::States::Client.new(region: config.region, stub_responses: config.stub_sfn_client)
     end
 
     private def serialize(job)
-      JSON.dump({
-        job_class: job.class.name,
-        job_id: job.job_id,
-        serialized_arguments: job.serialize,
-      })
+      JSON.dump({ serialized_job: JSON.dump(job.serialize) })
     end
 
-    private def deserialize(serialized_job)
+    def deserialize(serialized_job)
       JSON.parse(serialized_job).transform_keys(&:to_sym)
     end
   end

@@ -2,6 +2,10 @@
 
 module SfnJob
   class Configuration
-    attr_accessor :state_machine_arn, :region
+    attr_accessor :region, :stub_sfn_client
+
+    def initialize
+      @stub_sfn_client = false
+    end
   end
 end
