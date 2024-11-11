@@ -1,24 +1,66 @@
 # SfnJob
 
-TODO: Delete this and the text below, and describe your gem
+SfnJob provides a simple way to run a job on AWS Step Functions.
 
-Welcome to your new gem! In this directory, you'll find the files you need to be able to package up your Ruby library into a gem. Put your Ruby code in the file `lib/sfn_job`. To experiment with that code, run `bin/console` for an interactive prompt.
+This might be useful when your team use sidekiq on container
+which makes it hard to run a job takes long time.
 
 ## Installation
 
-TODO: Replace `UPDATE_WITH_YOUR_GEM_NAME_IMMEDIATELY_AFTER_RELEASE_TO_RUBYGEMS_ORG` with your gem name right after releasing it to RubyGems.org. Please do not do it earlier due to security reasons. Alternatively, replace this section with instructions to install your gem from git if you don't plan to release to RubyGems.org.
+```
+gem install sfn_job
+# or bundle add sfn_job
+```
 
-Install the gem and add to the application's Gemfile by executing:
+## Configuration
 
-    $ bundle add UPDATE_WITH_YOUR_GEM_NAME_IMMEDIATELY_AFTER_RELEASE_TO_RUBYGEMS_ORG
-
-If bundler is not being used to manage dependencies, install the gem by executing:
-
-    $ gem install UPDATE_WITH_YOUR_GEM_NAME_IMMEDIATELY_AFTER_RELEASE_TO_RUBYGEMS_ORG
+```ruby
+SfnJob.configure do |config|
+  config.region = 'ap-northeast-1'
+end
+```
 
 ## Usage
 
-TODO: Write usage instructions here
+this gem provides active job adapter and runner task for enqueued job
+
+```ruby
+class SomeJob < ApplicationJob
+  self.queue_adapter = :sfn_job
+  # Treat state machine arn as queue name
+  queue_as "arn:aws:states:ap-northeast-1:123456789012:stateMachine:sfn_job"
+
+  def perform(item_id)
+    # do something
+  end
+end
+```
+
+The gem will call StartExecution API with input as below:
+
+```json
+{
+  "serialized_job": "serialized_job_as_json"
+}
+```
+
+And create state machine which pass this serialized_job to RunTask overrided env "SERIEALIZED_JOB".
+
+```bash
+SERIEALIZED_JOB='serialized_job_as_json' bundle exec rails sfn_job:execute
+```
+
+## Why
+
+It's quite complex to handle long time async job,
+such as [sidekiq-iteration](https://github.com/fatkodima/sidekiq-iteration) or split job into small pieces with `Sideiq::Batch`.
+
+## Why not
+
+- hard to accept more infra complexity
+- which jobs are enqueued frequently
+  - Be careful with sfn StartExecution api rate limit. [Step Functions service quotas - AWS](https://docs.aws.amazon.com/step-functions/latest/dg/service-quotas.html)
+  - And RunTask api rate limit also (if you use Fargate) [AWS Fargate throttling quotas - AWS](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/throttling.html)
 
 ## Development
 
@@ -28,4 +70,4 @@ To install this gem onto your local machine, run `bundle exec rake install`. To 
 
 ## Contributing
 
-Bug reports and pull requests are welcome on GitHub at https://github.com/[USERNAME]/sfn_job.
+Bug reports and pull requests are welcome on GitHub at https://github.com/riseshia/sfn_job.
