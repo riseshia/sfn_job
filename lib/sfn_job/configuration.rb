@@ -2,6 +2,7 @@
 
 module SfnJob
   class Configuration
+    # XXX region might be auto detected from sfn arn
     attr_accessor :region, :stub_sfn_client
 
     def initialize
