@@ -17,6 +17,7 @@ gem install sfn_job
 ```ruby
 SfnJob.configure do |config|
   config.region = 'ap-northeast-1'
+  config.stub_sfn_client = Rails.env.test? # Set this to true when test not to call AWS API actually
 end
 ```
 
