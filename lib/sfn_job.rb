@@ -28,7 +28,7 @@ module SfnJob
 
     def enqueue(job)
       sfn_client.start_execution({
-        state_machine_arn: job.queue_name,
+        state_machine_arn: build_arn(job.queue_name),
         name: "#{job.class.name}-#{job.job_id}",
         input: serialize(job),
       })
@@ -36,6 +36,10 @@ module SfnJob
 
     def sfn_client
       @sfn_client ||= Aws::States::Client.new(region: config.region, stub_responses: config.stub_sfn_client)
+    end
+
+    private def build_arn(sfn_name)
+      "arn:aws:states:#{config.region}:#{config.account_id}:stateMachine:sfn_job"
     end
 
     private def serialize(job)

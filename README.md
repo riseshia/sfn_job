@@ -16,7 +16,8 @@ gem install sfn_job
 
 ```ruby
 SfnJob.configure do |config|
-  config.region = 'ap-northeast-1'
+  config.region = "ap-northeast-1"
+  config.account_id = "123456789012"
   config.stub_sfn_client = Rails.env.test? # Set this to true when test not to call AWS API actually
 end
 ```
@@ -28,8 +29,8 @@ this gem provides active job adapter and runner task for enqueued job
 ```ruby
 class SomeJob < ApplicationJob
   self.queue_adapter = :sfn_job
-  # Treat state machine arn as queue name
-  queue_as "arn:aws:states:ap-northeast-1:123456789012:stateMachine:sfn_job"
+  # Treat state machine name as queue name
+  queue_as "sfn_job"
 
   def perform(item_id)
     # do something
