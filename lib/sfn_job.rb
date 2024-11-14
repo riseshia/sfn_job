@@ -39,7 +39,7 @@ module SfnJob
     end
 
     private def build_arn(sfn_name)
-      "arn:aws:states:#{config.region}:#{config.account_id}:stateMachine:sfn_job"
+      "arn:aws:states:#{config.region}:#{config.account_id}:stateMachine:#{sfn_name}"
     end
 
     private def serialize(job)
