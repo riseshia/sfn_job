@@ -27,9 +27,10 @@ module SfnJob
     end
 
     def enqueue(job)
+      normalized_name = normalize_namespace(job.class.name)
       sfn_client.start_execution({
         state_machine_arn: build_arn(job.queue_name),
-        name: "#{job.class.name}-#{job.job_id}",
+        name: "#{normalized_name}-#{job.job_id}",
         input: serialize(job),
       })
     end
@@ -46,6 +47,10 @@ module SfnJob
       JSON.dump({ serialized_job: JSON.dump(job.serialize) }).tap do |serialized_job|
         raise "Job serialization is too large" if serialized_job.bytesize > MAX_SERIALIZED_JOB_SIZE
       end
+    end
+
+    private def normalize_namespace(name)
+      name.to_s.gsub("::", "_")
     end
 
     def deserialize(serialized_job)

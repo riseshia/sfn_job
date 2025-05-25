@@ -6,7 +6,8 @@ module CustomMatchers
 
     def matches?(target)
       @target = target
-      @target.start_with?("#{@job_class}-")
+      normalized_class_name = normalize_namespace(@job_class.to_s)
+      @target.start_with?("#{normalized_class_name}-")
     end
 
     def failure_message
@@ -15,6 +16,10 @@ module CustomMatchers
 
     def failure_message_when_negated
       "expected #{@target} not to be a valid state execution name for #{@job_class}"
+    end
+
+    private def normalize_namespace(name)
+      name.to_s.gsub("::", "_")
     end
   end
 
