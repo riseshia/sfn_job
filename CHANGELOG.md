@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+## [0.1.3] - 2025-05-26
+
 ### Added
 
 - Normalize job name('::' -> '_') in Sfn execution name to avoid its naming rule. Ref: [StartExecution API syntax - AWS](https://docs.aws.amazon.com/step-functions/latest/apireference/API_StartExecution.html#API_StartExecution_RequestSyntax)
