@@ -1,20 +1,47 @@
+# frozen_string_literal: true
+
 RSpec.describe 'sfn_job:execute' do
   subject(:task) { Rake.application['sfn_job:execute'] }
 
   context 'when SERIALIZED_JOB is set' do
-    it 'calls runner' do
-      ENV['SERIALIZED_JOB'] = '{}'
-      expect(SfnJob::Runner).to receive(:run).with(serialized_job: '{}')
+    let(:job_data) do
+      {
+        "job_class" => "TestJob",
+        "arguments" => ["arg1", "arg2", { "key" => "value" }],
+      }
+    end
+    let(:serialized_job) { JSON.dump(job_data) }
+
+    before do
+      ENV['SERIALIZED_JOB'] = serialized_job
+    end
+
+    it 'calls runner with the serialized job' do
+      expect(ActiveJob::Base).to receive(:execute).with(job_data)
 
       task.invoke
     end
   end
 
   context 'when SERIALIZED_JOB is not set' do
-    it 'raises error' do
+    before do
+      ENV.delete('SERIALIZED_JOB')
+    end
+
+    it 'raises error with appropriate message' do
       expect(SfnJob::Runner).not_to receive(:run)
 
       expect { task.invoke }.to raise_error(RuntimeError, 'SERIALIZED_JOB environment variable is required')
+    end
+  end
+
+  context 'when SERIALIZED_JOB is empty string' do
+    before do
+      ENV['SERIALIZED_JOB'] = '{"hoge":}'
+    end
+
+    it 'calls runner with empty string' do
+      expect { task.invoke }.to raise_error(JSON::ParserError)
     end
   end
 end

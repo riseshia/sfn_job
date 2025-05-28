@@ -13,6 +13,6 @@ namespace :sfn_job do
 
     serialized_job = ENV.fetch('SERIALIZED_JOB')
 
-    SfnJob::Runner.run(serialized_job: serialized_job)
+    SfnJob::Runner.run(serialized_job)
   end
 end

@@ -2,6 +2,10 @@
 
 ## [Unreleased]
 
+### Fixed
+
+- Fix sfn_job:execute fail with TypeError
+
 ## [0.1.3] - 2025-05-26
 
 ### Added
