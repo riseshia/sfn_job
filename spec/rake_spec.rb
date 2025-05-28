@@ -35,12 +35,12 @@ RSpec.describe 'sfn_job:execute' do
     end
   end
 
-  context 'when SERIALIZED_JOB is empty string' do
+  context 'when SERIALIZED_JOB is invalided serialized string' do
     before do
       ENV['SERIALIZED_JOB'] = '{"hoge":}'
     end
 
-    it 'calls runner with empty string' do
+    it 'raises error' do
       expect { task.invoke }.to raise_error(JSON::ParserError)
     end
   end
