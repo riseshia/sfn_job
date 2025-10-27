@@ -8,7 +8,7 @@ gemspec
 gem "bootsnap", require: false
 
 gem "rake", "~> 13.0"
-gem "rails", "~> 8.0.0"
+gem "rails", "~> 8.1.0"
 
 gem "rspec"
 gem "rspec-rails"
